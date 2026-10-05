@@ -1,0 +1,111 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function owns(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function validMoney(value) {
+      return value is int && value >= 0;
+    }
+
+    function validCategoryBudgets(value) {
+      return value is map
+        && value.keys().hasOnly([
+          'Food', 'Transport', 'School', 'Bills', 'Shopping',
+          'Entertainment', 'Health', 'Other'
+        ])
+        && (!('Food' in value) || validMoney(value.Food))
+        && (!('Transport' in value) || validMoney(value.Transport))
+        && (!('School' in value) || validMoney(value.School))
+        && (!('Bills' in value) || validMoney(value.Bills))
+        && (!('Shopping' in value) || validMoney(value.Shopping))
+        && (!('Entertainment' in value) || validMoney(value.Entertainment))
+        && (!('Health' in value) || validMoney(value.Health))
+        && (!('Other' in value) || validMoney(value.Other));
+    }
+
+    match /users/{userId} {
+      allow read, create, update: if owns(userId);
+      allow delete: if false;
+
+      match /transactions/{id} {
+        // Existing pre-upgrade records remain readable and deletable.
+        allow read, delete: if owns(userId);
+        allow create, update: if owns(userId)
+          && request.resource.data.keys().hasOnly([
+            'amountCents', 'type', 'description', 'category', 'walletId',
+            'transactionDate', 'createdAt', 'updatedAt'
+          ])
+          && request.resource.data.amountCents is int
+          && request.resource.data.amountCents > 0
+          && request.resource.data.type in ['income', 'expense']
+          && request.resource.data.description is string
+          && request.resource.data.description.size() > 0
+          && request.resource.data.description.size() <= 200
+          && request.resource.data.category in [
+            'Food', 'Transport', 'School', 'Bills', 'Shopping',
+            'Entertainment', 'Health', 'Allowance', 'Salary', 'Gift', 'Other'
+          ]
+          && request.resource.data.walletId is string
+          && request.resource.data.walletId.size() > 0
+          && exists(/databases/$(database)/documents/users/$(userId)/wallets/$(request.resource.data.walletId))
+          && request.resource.data.transactionDate is string
+          && request.resource.data.createdAt is string
+          && request.resource.data.updatedAt is string;
+      }
+
+      match /wallets/{id} {
+        allow read, delete: if owns(userId);
+        allow create, update: if owns(userId)
+          && request.resource.data.keys().hasOnly([
+            'name', 'openingBalanceCents', 'createdAt', 'updatedAt'
+          ])
+          && request.resource.data.name is string
+          && request.resource.data.name.size() > 0
+          && request.resource.data.name.size() <= 60
+          && validMoney(request.resource.data.openingBalanceCents)
+          && request.resource.data.createdAt is string
+          && request.resource.data.updatedAt is string;
+      }
+
+      match /transfers/{id} {
+        allow read, delete: if owns(userId);
+        allow create: if owns(userId)
+          && request.resource.data.keys().hasOnly([
+            'fromWalletId', 'toWalletId', 'amountCents', 'description',
+            'transferDate', 'createdAt'
+          ])
+          && request.resource.data.fromWalletId is string
+          && request.resource.data.toWalletId is string
+          && request.resource.data.fromWalletId != request.resource.data.toWalletId
+          && exists(/databases/$(database)/documents/users/$(userId)/wallets/$(request.resource.data.fromWalletId))
+          && exists(/databases/$(database)/documents/users/$(userId)/wallets/$(request.resource.data.toWalletId))
+          && request.resource.data.amountCents is int
+          && request.resource.data.amountCents > 0
+          && request.resource.data.description is string
+          && request.resource.data.transferDate is string
+          && request.resource.data.createdAt is string;
+        allow update: if false;
+      }
+
+      match /budgets/{month} {
+        allow read, delete: if owns(userId);
+        allow create, update: if owns(userId)
+          && request.resource.data.keys().hasOnly([
+            'month', 'overallCents', 'categories', 'updatedAt'
+          ])
+          && request.resource.data.month == month
+          && request.resource.data.overallCents is int
+          && request.resource.data.overallCents > 0
+          && validCategoryBudgets(request.resource.data.categories)
+          && request.resource.data.updatedAt is string;
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

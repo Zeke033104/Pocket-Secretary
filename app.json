@@ -1,0 +1,26 @@
+{
+  "expo": {
+    "name": "Pocket Secretary",
+    "slug": "pocket-secretary",
+    "scheme": "pocketsecretary",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "plugins": [
+      "expo-router",
+      "expo-font"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "android": {
+      "package": "com.pocketsecretary.app"
+    },
+    "ios": {
+      "bundleIdentifier": "com.pocketsecretary.app"
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
