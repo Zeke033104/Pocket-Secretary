@@ -2,6 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getApp, getApps, initializeApp } from 'firebase/app';
 import * as FirebaseAuth from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getFunctions } from 'firebase/functions';
+import { getStorage } from 'firebase/storage';
 import { Platform } from 'react-native';
 
 const firebaseConfig = {
@@ -15,7 +17,7 @@ const firebaseConfig = {
 
 export const isFirebaseConfigured = Object.values(firebaseConfig).every(Boolean);
 
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+export const firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const { getAuth, initializeAuth } = FirebaseAuth;
 // Metro resolves Firebase's React Native build, which includes this export.
 // The generic TypeScript declaration targets the browser build, so it is narrowed here.
@@ -24,13 +26,15 @@ const getReactNativePersistence = (FirebaseAuth as typeof FirebaseAuth & {
 }).getReactNativePersistence;
 
 function createAuth() {
-  if (Platform.OS === 'web') return getAuth(app);
+  if (Platform.OS === 'web') return getAuth(firebaseApp);
   try {
-    return initializeAuth(app, { persistence: getReactNativePersistence(AsyncStorage) });
+    return initializeAuth(firebaseApp, { persistence: getReactNativePersistence(AsyncStorage) });
   } catch {
-    return getAuth(app);
+    return getAuth(firebaseApp);
   }
 }
 
 export const auth = createAuth();
-export const db = getFirestore(app);
+export const db = getFirestore(firebaseApp);
+export const storage = getStorage(firebaseApp);
+export const functions = getFunctions(firebaseApp, process.env.EXPO_PUBLIC_FIREBASE_FUNCTIONS_REGION || 'us-central1');
