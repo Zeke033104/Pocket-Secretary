@@ -1,11 +1,13 @@
 node_modules/
 .expo/
 .expo-check/
+.expo-web-check/
 .npm-cache/
 Microsoft/
 dist/
 web-build/
 coverage/
+functions/lib/
 *.log
 
 # Local environment configuration

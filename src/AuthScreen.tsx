@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { auth } from './firebase';
 import { PocketMark } from './LaunchReveal';
 import { PocketWordImage } from './LogoAssets';
+import { FadeInView } from './animations';
 
 const palette = { navy: '#11173F', green: '#07924D', bright: '#19AE61', mint: '#E9FFF5', line: '#D2D9E1', muted: '#586582', white: '#FFFFFF', red: '#C94747' };
 
@@ -59,8 +60,9 @@ export function AuthScreen() {
   }
 
   return <LinearGradient colors={['#EEFFF7', '#F8FFFC', '#E5FFF2']} style={s.page}><KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}><ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: top + 16, paddingBottom: bottom + 22 }}>
-    <Brand />
+    <FadeInView><Brand /></FadeInView>
     <View style={s.card}><View style={s.tabs}><Pressable onPress={() => changeMode('login')} style={[s.tab, mode === 'login' && s.tabActive]}><Text style={[s.tabText, mode === 'login' && s.tabTextActive]}>Log in</Text></Pressable><Pressable onPress={() => changeMode('signup')} style={[s.tab, mode === 'signup' && s.tabActive]}><Text style={[s.tabText, mode === 'signup' && s.tabTextActive]}>Sign up</Text></Pressable></View>
+      <FadeInView key={mode} distance={6}>
       <Text style={s.title}>{mode === 'login' ? 'Welcome back' : 'Start your money journey'}</Text><Text style={s.subtitle}>{mode === 'login' ? "Let’s keep your money on track." : 'A little clarity for every peso.'}</Text>
       {mode === 'signup' && <Field label="Full name" icon="person-outline" value={name} onChangeText={setName} placeholder="Your full name" autoComplete="name" />}
       <Field label="Email" icon="mail-outline" value={email} onChangeText={setEmail} placeholder="you@email.com" autoComplete="email" keyboardType="email-address" />
@@ -70,6 +72,7 @@ export function AuthScreen() {
       {!!error && <Text style={s.error}>{error}</Text>}
       <Pressable onPress={submit} disabled={busy} style={[s.button, busy && { opacity: .65 }]}>{busy ? <ActivityIndicator color="white" /> : <><Text style={s.buttonText}>{mode === 'login' ? 'Log in' : 'Create account'}</Text><Ionicons name="arrow-forward" size={21} color="white" /></>}</Pressable>
       <View style={s.bottomSwitch}><View style={s.rule} /><Text style={s.bottomText}>{mode === 'login' ? 'New here? ' : 'Already have an account? '}<Text onPress={() => changeMode(mode === 'login' ? 'signup' : 'login')} style={s.link}>{mode === 'login' ? 'Create an account' : 'Log in'}</Text></Text><View style={s.rule} /></View>
+      </FadeInView>
     </View>
   </ScrollView></KeyboardAvoidingView></LinearGradient>;
 }

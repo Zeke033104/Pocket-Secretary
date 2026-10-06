@@ -7,11 +7,15 @@ A private, account-based mobile finance tracker built with Expo, React Native, a
 - Dashboard with live wallet balance, monthly income, expenses, budget, breakdowns, and calculated insights
 - Income and expense capture with centavo-safe amounts, category, wallet, and transaction date
 - Email/password account creation and sign-in
+- Profile editing with Firebase Auth display name and Cloud Storage avatar
+- Secure callable account deletion with recent-password reauthentication
 - Cloud-synced Firestore wallets, transactions, transfers, and budgets, private to each account
 - Searchable and filterable history with transaction editing and deletion
 - Wallet creation, derived balances, and wallet-to-wallet transfers
 - Overall and optional category monthly budgets with exceeded-budget indicators
 - Honest calculated spending insights without an external AI API
+- Swipeable combined and per-wallet balance cards
+- A draggable, position-persistent calculator available throughout the app
 - Android, iOS, and web support from one codebase
 
 ## Set up Firebase

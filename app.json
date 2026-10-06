@@ -3,24 +3,47 @@
     "name": "Pocket Secretary",
     "slug": "pocket-secretary",
     "scheme": "pocketsecretary",
-    "version": "1.0.0",
+    "version": "1.0.2",
+    "icon": "./assets/icon.png",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "plugins": [
       "expo-router",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Pocket Secretary to choose a profile photo.",
+          "microphonePermission": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
     },
     "android": {
-      "package": "com.pocketsecretary.app"
+      "package": "com.pocketsecretary.app",
+      "versionCode": 3,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#F5F3EC"
+      },
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "ios": {
       "bundleIdentifier": "com.pocketsecretary.app"
     },
     "web": {
       "bundler": "metro"
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "783383ec-1f1c-41af-8ba1-6c5ec7be3ab5"
+      }
+    },
+    "owner": "zeke033104"
   }
 }

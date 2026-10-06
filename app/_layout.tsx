@@ -7,6 +7,7 @@ import { ActivityIndicator, View } from 'react-native';
 import { colors } from '@/theme';
 import { useCallback, useState } from 'react';
 import { LaunchReveal } from '@/LaunchReveal';
+import { FloatingCalculator } from '@/FloatingCalculator';
 
 function AppGate() {
   const { user, loading } = useAuth();
@@ -14,8 +15,11 @@ function AppGate() {
   if (!user) return <AuthScreen />;
   return (
     <StoreProvider>
-      <StatusBar style="dark" />
-      <Stack screenOptions={{ headerShown: false, animation: 'fade' }} />
+      <View style={{ flex: 1 }}>
+        <StatusBar style="dark" />
+        <Stack screenOptions={{ headerShown: false, animation: 'fade' }} />
+        <FloatingCalculator />
+      </View>
     </StoreProvider>
   );
 }
